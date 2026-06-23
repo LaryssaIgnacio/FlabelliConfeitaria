@@ -1,0 +1,363 @@
+:root {
+  --creme: #FFF8F1;
+  --creme-2: #FDEDE3;
+  --rosa: #F7C9C0;
+  --terracota: #EFA88A;
+  --terracota-forte: #E08A63;
+  --dourado: #F4D58D;
+  --texto: #4A3428;
+  --texto-suave: #9C8576;
+  --branco: #FFFFFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(160deg, var(--creme) 0%, var(--creme-2) 55%, var(--rosa) 100%);
+  padding: 24px;
+  color: var(--texto);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* CARTÃO: a foto cobre o cartão inteiro */
+.cartao {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  min-height: 700px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 6px solid #f5ee9e;
+  box-shadow: 0 25px 60px -15px rgba(74, 52, 40, 0.25);
+  display: flex;
+  flex-direction: column;
+  background: url('img/imgbololu.jpeg') center / cover no-repeat;
+}
+
+/* CAMADA ESCURA: garante legibilidade do texto sobre a foto */
+.cartao::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(20, 10, 5, 0.05) 0%, rgba(20, 10, 5, 0.15) 40%, rgba(20, 10, 5, 0.8) 100%);
+}
+
+/* LOGO / AVATAR */
+.logo {
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: var(--branco);
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  position: relative;
+  z-index: 1;
+  margin: 28px auto 0;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.3);
+  transform-origin: center;
+}
+
+.logo span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--texto-suave);
+  text-align: center;
+  padding: 0 8px;
+  text-transform: uppercase;
+}
+
+/* CONTEÚDO */
+.conteudo {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 20px 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* NOME / TÍTULO */
+.nome {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--branco);
+  text-align: center;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* LEGENDA */
+.legenda {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--branco);
+  text-align: center;
+  max-width: 340px;
+  margin-bottom: 28px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65), 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+/* LINKS */
+.links {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.link {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 18px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.link:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.26);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.link-icone {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-icone svg {
+  width: 22px;
+  height: 22px;
+}
+
+.link.cardapio .link-icone { background: #FCE7D6; color: #D9824B; }
+.link.whatsapp .link-icone { background: #DCF4E3; color: #25A95B; }
+.link.ifood    .link-icone { background: #FBE0DD; color: #EA5C4A; }
+
+.link-texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.link-titulo {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--branco);
+}
+
+.link-subtitulo {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-seta {
+  flex-shrink: 0;
+  color: var(--branco);
+  opacity: 0.7;
+}
+
+.link-seta svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* REDES SOCIAIS */
+.redes {
+  display: flex;
+  gap: 14px;
+}
+
+.redes a {
+  position: relative;
+  overflow: hidden;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--branco);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.redes a:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 22px rgba(74, 52, 40, 0.2);
+  filter: brightness(1.06);
+}
+
+.redes a.instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.redes a.whatsapp { background: #25D366; }
+
+.redes svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* EFEITO RIPPLE (clique) */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(0);
+  animation: ondear 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes ondear {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ANIMAÇÃO DE ENTRADA */
+.cartao {
+  animation: surgir 0.6s ease both;
+}
+
+.conteudo > * {
+  opacity: 0;
+  animation: surgir 0.6s ease forwards;
+}
+
+.conteudo > *:nth-child(1) { animation-delay: 0.05s; }
+.conteudo > *:nth-child(2) { animation-delay: 0.1s; }
+.conteudo > *:nth-child(3) { animation-delay: 0.15s; }
+.conteudo > *:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes surgir {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* DIREITOS AUTORAIS */
+.direitos {
+  padding: 14px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.direitos p {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.direitos-studio {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* TELAS PEQUENAS (celulares) */
+@media (max-width: 380px) {
+  body {
+    padding: 12px;
+  }
+
+  .cartao {
+    min-height: 560px;
+  }
+
+  .logo {
+    width: 92px;
+    height: 92px;
+    margin-top: 20px;
+  }
+
+  .conteudo {
+    padding: 16px 20px 24px;
+  }
+
+  .nome {
+    font-size: 21px;
+  }
+
+  .legenda {
+    font-size: 14px;
+    margin-bottom: 22px;
+  }
+
+  .link {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .link-icone {
+    width: 40px;
+    height: 40px;
+  }
+
+  .link-icone svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .link-titulo {
+    font-size: 14.5px;
+  }
+
+  .link-subtitulo {
+    font-size: 12px;
+  }
+}

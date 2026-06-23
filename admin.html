@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FEF08A">
+  <link rel="icon" type="image/jpeg" href="img/logoteste.jpeg">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel Administrativo | Flabelli Confeitaria</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+</head>
+<body>
+
+  <!-- AVISO: SUPABASE NÃO CONFIGURADO -->
+  <div class="aviso-config" id="avisoConfig" hidden>
+    <div class="aviso-card">
+      <div class="aviso-icone">⚙️</div>
+      <h1>Configuração necessária</h1>
+      <p>Para usar o painel administrativo, configure a conexão com o Supabase no arquivo <code>supabase-config.js</code> (Project URL e chave anon).</p>
+      <a class="botao-primario" href="cardapio.html">Voltar ao cardápio</a>
+    </div>
+  </div>
+
+  <!-- TELA DE LOGIN -->
+  <div class="login-tela" id="loginTela" hidden>
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="img/logoteste.jpeg" alt="Flabelli Confeitaria">
+      </div>
+      <h1>Painel Administrativo</h1>
+      <p>Entre com sua conta para gerenciar o cardápio</p>
+
+      <form id="formLogin">
+        <label>
+          E-mail
+          <input type="email" id="loginEmail" required placeholder="seuemail@exemplo.com" autocomplete="username">
+        </label>
+        <label>
+          Senha
+          <input type="password" id="loginSenha" required placeholder="••••••••" autocomplete="current-password">
+        </label>
+        <p class="mensagem-erro" id="loginErro"></p>
+        <button type="submit" class="botao-primario">Entrar</button>
+      </form>
+
+      <a class="login-voltar" href="cardapio.html">← Voltar ao cardápio</a>
+    </div>
+  </div>
+
+  <!-- HOME DO PAINEL -->
+  <div class="admin-app" id="painelHome" hidden>
+    <header class="admin-topbar">
+      <div class="admin-marca">
+        <span class="admin-marca-icone"><img src="img/logoteste.jpeg" alt="Flabelli Confeitaria"></span>
+        <div>
+          <strong>Flabelli Confeitaria</strong>
+          <span>Área Administrativa</span>
+        </div>
+      </div>
+      <div class="painel-acoes">
+        <a class="botao-secundario" href="cardapio.html">Ver cardápio</a>
+        <button type="button" class="botao-secundario" id="botaoSair">Sair</button>
+      </div>
+    </header>
+
+    <main class="admin-home">
+      <div class="admin-boasvindas">
+        <div class="admin-avatar">👩‍🍳</div>
+        <h1>Olá, Luana!</h1>
+        <p>Escolha qual painel você deseja gerenciar hoje</p>
+      </div>
+
+      <div class="categorias-admin">
+        <article class="categoria-card">
+          <div class="categoria-faixa cor-laranja"></div>
+          <div class="categoria-corpo">
+            <div class="categoria-icone cor-laranja">🍰</div>
+            <h2>Gerenciar Cardápio</h2>
+            <p>Adicione, edite ou remova produtos. Defina legenda, preço, descrição, estoque e marque itens como esgotados.</p>
+            <button type="button" class="botao-primario" data-ir-para="painelProdutos">Acessar Painel →</button>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-faixa cor-menta"></div>
+          <div class="categoria-corpo">
+            <div class="categoria-icone cor-menta">⚙️</div>
+            <h2>Funcionalidades do Sistema</h2>
+            <p>Dashboard de vendas, controle de estoque e insights sobre seus clientes.</p>
+            <button type="button" class="botao-primario" data-ir-para="painelSistema">Acessar Painel →</button>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <!-- FUNCIONALIDADES DO SISTEMA -->
+  <div class="admin-app" id="painelSistema" hidden>
+    <header class="admin-topbar">
+      <div class="admin-marca">
+        <span class="admin-marca-icone"><img src="img/logoteste.jpeg" alt="Flabelli Confeitaria"></span>
+        <div>
+          <strong>Flabelli Confeitaria</strong>
+          <span>Área Administrativa</span>
+        </div>
+      </div>
+      <div class="painel-acoes">
+        <button type="button" class="botao-secundario" data-ir-para="painelHome">← Voltar</button>
+      </div>
+    </header>
+
+    <main class="admin-home">
+      <div class="admin-boasvindas">
+        <h1>Funcionalidades do Sistema</h1>
+        <p>Escolha uma área para gerenciar</p>
+      </div>
+
+      <div class="categorias-admin categorias-sistema">
+        <article class="categoria-card">
+          <div class="categoria-faixa cor-rosa"></div>
+          <div class="categoria-corpo">
+            <div class="categoria-icone cor-rosa">📈</div>
+            <h2>Dashboard</h2>
+            <ul class="lista-recursos">
+              <li>Total de pedidos</li>
+              <li>Vendas do dia/mês</li>
+              <li>Produtos mais vendidos</li>
+              <li>Gráficos e estatísticas</li>
+            </ul>
+            <button type="button" class="botao-primario" data-ir-para="painelDashboard">Acessar Painel →</button>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-faixa cor-laranja"></div>
+          <div class="categoria-corpo">
+            <div class="categoria-icone cor-laranja">📦</div>
+            <h2>Estoque</h2>
+            <ul class="lista-recursos">
+              <li>Adicionar ingredientes</li>
+              <li>Registrar entradas e saídas</li>
+              <li>Editar quantidades</li>
+              <li>Ver itens com estoque baixo</li>
+            </ul>
+            <button type="button" class="botao-primario" data-ir-para="painelEstoque">Acessar Painel →</button>
+          </div>
+        </article>
+
+        <article class="categoria-card">
+          <div class="categoria-faixa cor-amarelo"></div>
+          <div class="categoria-corpo">
+            <div class="categoria-icone cor-amarelo">📊</div>
+            <h2>Insights</h2>
+            <ul class="lista-recursos">
+              <li>Visitas e cliques no WhatsApp</li>
+              <li>Produtos mais visualizados</li>
+              <li>Taxa de conversão</li>
+              <li>Perfil dos clientes cadastrados</li>
+            </ul>
+            <button type="button" class="botao-primario" data-ir-para="painelInsights">Acessar Painel →</button>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="painel" id="painelInsights" hidden>
+
+    <header class="painel-topo">
+      <div class="painel-titulo">
+        <h1>Insights</h1>
+        <p>Flabelli Confeitaria</p>
+      </div>
+      <div class="painel-acoes">
+        <button type="button" class="botao-secundario" data-ir-para="painelSistema">← Voltar</button>
+        <button type="button" class="botao-reset-dashboard" id="botaoResetInsights" title="Apagar todos os dados de analytics de teste">🗑️ Resetar dados</button>
+      </div>
+    </header>
+
+    <main class="painel-conteudo painel-conteudo-cardapio">
+
+      <!-- ESTATÍSTICAS -->
+      <section class="painel-card">
+        <div class="insights-stats">
+          <div class="stat-box">
+            <span class="stat-valor" id="statVisitas">–</span>
+            <span class="stat-label">Visitas ao cardápio</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-valor" id="statCliquesWhatsapp">–</span>
+            <span class="stat-label">Cliques no WhatsApp</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-valor" id="statConversao">–</span>
+            <span class="stat-label">
+              Taxa de conversão
+              <span class="info-tooltip" tabindex="0">
+                <span class="info-tooltip-icone">ⓘ</span>
+                <span class="info-tooltip-balao">
+                  Mostra quantas visitas ao cardápio terminaram em pedido: (pedidos ÷ visitas) × 100.
+                  Com poucos dados, o número parece "extremo" (0% ou 100%) — conforme mais clientes
+                  visitarem o cardápio, esse valor se ajusta para algo mais realista, como 15% ou 30%.
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <div class="dashboard-grade">
+        <section class="painel-card">
+          <h2>Produtos mais visualizados</h2>
+          <div class="ranking-produtos" id="rankingVisualizados">
+            <p class="mensagem-status">Carregando...</p>
+          </div>
+        </section>
+
+        <section class="painel-card">
+          <h2>Perfil dos clientes cadastrados</h2>
+          <p class="perfil-subtitulo">Faixa etária</p>
+          <div class="perfil-grafico-wrap" id="perfilGraficoWrap">
+            <div class="grafico-rosca" id="graficoFaixaEtaria"></div>
+            <div class="grafico-legenda-lista" id="legendaFaixaEtaria">
+              <p class="mensagem-status">Carregando...</p>
+            </div>
+          </div>
+          <p class="perfil-subtitulo">Gênero</p>
+          <div class="perfil-resumo" id="perfilResumo">
+            <p class="mensagem-status">Carregando...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- LISTA DE CLIENTES -->
+      <section class="painel-card">
+        <div class="painel-card-cabecalho">
+          <h2>👥 Clientes cadastrados <span class="contagem-badge" id="contagemClientesInsights">0</span></h2>
+          <div class="busca-produto">
+            <input type="search" id="campoBuscaClienteInsights" placeholder="Buscar e-mail...">
+          </div>
+        </div>
+        <div class="lista-clientes" id="listaClientesInsights">
+          <p class="mensagem-status">Carregando...</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="painel" id="painelDashboard" hidden>
+
+    <header class="painel-topo">
+      <div class="painel-titulo">
+        <h1>Dashboard</h1>
+        <p>Flabelli Confeitaria</p>
+      </div>
+      <div class="painel-acoes">
+        <button type="button" class="botao-secundario" data-ir-para="painelSistema">← Voltar</button>
+        <a class="botao-secundario" href="cardapio.html">Ver cardápio</a>
+        <button type="button" class="botao-reset-dashboard" id="botaoResetDashboard" title="Apagar todos os pedidos de teste">🗑️ Resetar dados</button>
+      </div>
+    </header>
+
+    <main class="dashboard-conteudo">
+
+      <div class="dashboard-cards">
+        <div class="dashboard-card">
+          <span class="dashboard-card-icone">🧾</span>
+          <div class="dashboard-card-info">
+            <span class="dashboard-card-valor" id="statTotalPedidos">–</span>
+            <span class="dashboard-card-label">Total de pedidos</span>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <span class="dashboard-card-icone">☀️</span>
+          <div class="dashboard-card-info">
+            <span class="dashboard-card-valor" id="statVendasHoje">–</span>
+            <span class="dashboard-card-label">Vendas hoje</span>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <span class="dashboard-card-icone">📅</span>
+          <div class="dashboard-card-info">
+            <span class="dashboard-card-valor" id="statVendasMes">–</span>
+            <span class="dashboard-card-label">Vendas no mês</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grade">
+        <section class="painel-card">
+          <h2>Vendas dos últimos 7 dias</h2>
+          <div class="grafico-barras" id="graficoVendas">
+            <p class="mensagem-status">Carregando...</p>
+          </div>
+        </section>
+
+        <section class="painel-card">
+          <h2>Produtos mais vendidos</h2>
+          <div class="ranking-produtos" id="rankingProdutos">
+            <p class="mensagem-status">Carregando...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- CALENDÁRIO DE VENDAS -->
+      <section class="painel-card dash-cal-card">
+        <div class="dash-cal-header">
+          <h2>Calendário de vendas</h2>
+          <div class="dash-cal-nav">
+            <button type="button" class="dash-cal-btn" id="calBtnAnterior">‹</button>
+            <span class="dash-cal-label" id="calMesLabel">—</span>
+            <button type="button" class="dash-cal-btn" id="calBtnProximo">›</button>
+          </div>
+        </div>
+        <div class="dash-cal-semana">
+          <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+        </div>
+        <div class="dash-cal-grade" id="calGrade"></div>
+      </section>
+
+      <!-- EXTRATO DE PEDIDOS -->
+      <section class="painel-card">
+        <div class="extrato-topo">
+          <h2>Extrato de pedidos</h2>
+          <span class="contagem-badge" id="extratoBadge">0</span>
+        </div>
+        <div class="extrato-lista" id="extratoLista">
+          <p class="mensagem-status">Carregando...</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ESTOQUE DE INGREDIENTES -->
+  <div class="painel" id="painelEstoque" hidden>
+
+    <header class="painel-topo">
+      <div class="painel-titulo">
+        <h1>Estoque de Ingredientes</h1>
+        <p>Flabelli Confeitaria</p>
+      </div>
+      <div class="painel-acoes">
+        <button type="button" class="botao-secundario" data-ir-para="painelSistema">← Voltar</button>
+      </div>
+    </header>
+
+    <main class="painel-conteudo painel-conteudo-cardapio">
+
+      <!-- ESTOQUE DE PRODUTOS DO CARDÁPIO -->
+      <section class="painel-card">
+        <div class="estoque-cabecalho">
+          <h2>📦 Estoque de Produtos</h2>
+        </div>
+        <p class="estoque-produtos-desc">Controle a quantidade disponível de cada produto do cardápio — registre entradas (produção) e saídas (vendas, perdas) sem precisar editar o produto.</p>
+
+        <div class="aviso-info">
+          <span class="aviso-info-icone">ℹ️</span>
+          <p class="aviso-info-texto">
+            <strong>Agora o estoque desconta automaticamente</strong> quando um cliente finaliza um pedido pelo cardápio.
+            Se o cliente desistir depois de enviar a mensagem no WhatsApp (não pagar ou cancelar), o estoque pode ficar
+            um pouco abaixo do real até você corrigir manualmente — basta usar o botão <strong>Entrada ↑</strong> no
+            produto correspondente para repor a quantidade.
+          </p>
+        </div>
+
+        <div class="lista-ingredientes" id="listaProdutosEstoque">
+          <p class="mensagem-status">Carregando produtos...</p>
+        </div>
+      </section>
+
+      <!-- FORMULÁRIO -->
+      <section class="painel-card">
+        <h2 id="formEstoqueTitulo">Novo ingrediente</h2>
+        <p class="mensagem-erro" id="formEstoqueErro"></p>
+
+        <form id="formIngrediente">
+          <input type="hidden" id="ingredienteId">
+
+          <label class="campo-full">
+            Nome do ingrediente
+            <input type="text" id="campoIngredienteNome" required placeholder="Ex: Farinha de trigo">
+          </label>
+
+          <label>
+            Quantidade disponível
+            <input type="number" id="campoIngredienteQuantidade" required min="0" step="0.01" placeholder="0">
+          </label>
+
+          <label>
+            Unidade
+            <select id="campoIngredienteUnidade">
+              <option value="kg">Quilogramas (kg)</option>
+              <option value="g">Gramas (g)</option>
+              <option value="l">Litros (L)</option>
+              <option value="unidades">Unidades</option>
+            </select>
+          </label>
+
+          <label>
+            Quantidade mínima
+            <input type="number" id="campoIngredienteMinimo" min="0" step="0.01" placeholder="0">
+          </label>
+
+          <div class="form-acoes campo-full">
+            <button type="submit" class="botao-primario" id="botaoSalvarIngrediente">Adicionar ingrediente</button>
+            <button type="button" class="botao-secundario" id="botaoCancelarIngrediente" hidden>Cancelar edição</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- LISTA DE INGREDIENTES -->
+      <section class="painel-card">
+        <div class="estoque-cabecalho">
+          <h2>Ingredientes cadastrados</h2>
+          <label class="campo-switch campo-switch-lista">
+            <span class="switch">
+              <input type="checkbox" id="filtroEstoqueBaixo">
+              <span class="switch-trilho"></span>
+            </span>
+            Mostrar apenas estoque baixo
+          </label>
+        </div>
+        <div class="lista-ingredientes" id="listaIngredientes">
+          <p class="mensagem-status">Carregando ingredientes...</p>
+        </div>
+      </section>
+
+      <!-- PLANILHA DE PRECIFICAÇÃO -->
+      <section class="painel-card prec-card">
+
+        <div class="prec-topo">
+          <div class="prec-topo-esquerda">
+            <h2 class="prec-titulo-principal">
+              <span class="prec-titulo-icone">📊</span>
+              Planilha de Precificação
+            </h2>
+            <p class="prec-subtitulo">Calcule o custo e o preço ideal dos seus produtos</p>
+          </div>
+          <div class="prec-topo-direita">
+            <select class="prec-seletor" id="precSeletorReceita">
+              <option value="">— Selecionar receita —</option>
+            </select>
+            <button type="button" class="prec-btn-nova" id="precBtnNova">+ Nova</button>
+          </div>
+        </div>
+
+        <div class="prec-nome-row">
+          <input class="prec-input-nome" id="precNomeReceita" type="text" placeholder="Nome da receita (ex: Cookie de Chocolate)">
+        </div>
+
+        <!-- BLOCO 1: INGREDIENTES -->
+        <div class="prec-bloco prec-bloco--ing">
+          <div class="prec-bloco-head">
+            <div class="prec-bloco-num prec-num--ing">1</div>
+            <div>
+              <h3 class="prec-bloco-h3">Ingredientes</h3>
+              <p class="prec-bloco-desc">Liste cada ingrediente e seu custo de compra</p>
+            </div>
+          </div>
+          <div class="prec-tabela-wrapper">
+            <table class="prec-tabela">
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>Paguei (R$)</th>
+                  <th>Por quantos</th>
+                  <th>Unidade</th>
+                  <th>= Custo / un</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="precBodyIng"><tr class="prec-linha-vazia"><td colspan="5">Nenhum ingrediente ainda. Clique em "+ Adicionar" para começar.</td></tr></tbody>
+            </table>
+          </div>
+          <button type="button" class="prec-btn-add prec-btn-add--ing" id="precBtnAddIng">+ Adicionar ingrediente</button>
+        </div>
+
+        <!-- BLOCO 2: RECEITA -->
+        <div class="prec-bloco prec-bloco--rec">
+          <div class="prec-bloco-head">
+            <div class="prec-bloco-num prec-num--rec">2</div>
+            <div>
+              <h3 class="prec-bloco-h3">Receita</h3>
+              <p class="prec-bloco-desc">Quanto de cada ingrediente é usado nesta receita</p>
+            </div>
+          </div>
+          <div class="prec-tabela-wrapper">
+            <table class="prec-tabela">
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>Quantidade usada</th>
+                  <th>Custo</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="precBodyRec"><tr class="prec-linha-vazia"><td colspan="4">Adicione ingredientes na seção 1 e depois monte sua receita aqui.</td></tr></tbody>
+            </table>
+          </div>
+          <button type="button" class="prec-btn-add prec-btn-add--rec" id="precBtnAddItem">+ Adicionar item</button>
+        </div>
+
+        <!-- BLOCO 3: RESULTADO -->
+        <div class="prec-bloco prec-bloco--res">
+          <div class="prec-bloco-head">
+            <div class="prec-bloco-num prec-num--res">3</div>
+            <div>
+              <h3 class="prec-bloco-h3">Resultado</h3>
+              <p class="prec-bloco-desc">Custo total, lucro e preço final sugerido</p>
+            </div>
+          </div>
+          <div class="prec-resultado-grid">
+            <div class="prec-resultado-item">
+              <span class="prec-resultado-label">Custo total dos ingredientes</span>
+              <span class="prec-resultado-val" id="precCustoTotal">R$ 0,00</span>
+            </div>
+            <div class="prec-resultado-item">
+              <span class="prec-resultado-label">Rendimento (unidades produzidas)</span>
+              <div class="prec-input-pct-wrapper">
+                <input class="prec-input-res" type="number" id="precRendimento" min="1" value="1" placeholder="1">
+                <span class="prec-pct-label">un</span>
+              </div>
+            </div>
+            <div class="prec-resultado-item">
+              <span class="prec-resultado-label">Custo por unidade</span>
+              <span class="prec-resultado-val" id="precCustoUnidade">R$ 0,00</span>
+            </div>
+            <div class="prec-resultado-item">
+              <span class="prec-resultado-label">Margem de lucro</span>
+              <div class="prec-input-pct-wrapper">
+                <input class="prec-input-res" type="number" id="precMargem" min="0" max="999" value="40" placeholder="40">
+                <span class="prec-pct-label">%</span>
+              </div>
+            </div>
+            <div class="prec-resultado-item prec-resultado-destaque">
+              <span class="prec-resultado-label">Preço final sugerido</span>
+              <span class="prec-resultado-val prec-preco-final" id="precPrecoFinal">R$ 0,00</span>
+            </div>
+            <div class="prec-resultado-item">
+              <span class="prec-resultado-label">Lucro por unidade</span>
+              <span class="prec-resultado-val prec-lucro-val" id="precLucroUnidade">R$ 0,00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="prec-acoes-bar">
+          <button type="button" class="botao-primario" id="precBtnSalvar">Salvar planilha</button>
+          <button type="button" class="botao-secundario prec-btn-excluir" id="precBtnExcluir" hidden>🗑️ Excluir receita</button>
+          <span class="prec-salvo-msg" id="precSalvoMsg" hidden>✓ Salvo com sucesso!</span>
+        </div>
+
+      </section>
+
+      <!-- PLANILHA MANUAL + CALCULADORA -->
+      <div class="planm-calc-layout">
+
+      <section class="painel-card planm-card">
+
+        <div class="planm-intro">
+          <span class="planm-intro-icone">💡</span>
+          <p class="planm-intro-texto">Se a primeira planilha não te agradar, tente essa manual 😊</p>
+        </div>
+
+        <div class="planm-topo">
+          <div>
+            <h2 class="planm-titulo">Planilha Manual</h2>
+            <p class="planm-subtitulo">Escreva, salve e acesse depois para editar — como no Excel</p>
+          </div>
+          <div class="prec-topo-direita">
+            <select class="prec-seletor" id="planmSeletor">
+              <option value="">— Selecionar planilha —</option>
+            </select>
+            <button type="button" class="prec-btn-nova" id="planmBtnNova">+ Nova</button>
+          </div>
+        </div>
+
+        <div class="prec-nome-row">
+          <input class="prec-input-nome" id="planmNome" type="text" placeholder="Nome da planilha (ex: Custos de Janeiro)">
+        </div>
+
+        <div class="planm-topo-acoes">
+          <button type="button" class="planm-btn-topo" id="planmBtnAddColuna">+ Coluna</button>
+          <button type="button" class="planm-btn-topo planm-btn-topo--linha" id="planmBtnAddLinha">+ Linha</button>
+          <button type="button" class="planm-btn-topo planm-btn-topo--limpar" id="planmBtnLimpar">🗑️ Limpar</button>
+        </div>
+
+        <div class="planm-wrapper">
+          <table class="planm-tabela" id="planmTabela">
+            <!-- preenchido pelo JS -->
+          </table>
+        </div>
+
+        <p class="planm-dica">Dica: use <kbd>Tab</kbd> para avançar células e <kbd>Enter</kbd> para nova linha</p>
+
+        <div class="prec-acoes-bar">
+          <button type="button" class="botao-primario" id="planmBtnSalvar">Salvar planilha</button>
+          <button type="button" class="botao-secundario prec-btn-excluir" id="planmBtnExcluir" hidden>🗑️ Excluir planilha</button>
+          <span class="prec-salvo-msg" id="planmSalvoMsg" hidden>✓ Salvo com sucesso!</span>
+        </div>
+
+      </section>
+
+      <!-- MINI CALCULADORA -->
+      <div class="painel-card calc-card" id="calcCard">
+        <div class="calc-display">
+          <span class="calc-historico" id="calcHistorico"></span>
+          <span class="calc-valor" id="calcValor">0</span>
+        </div>
+        <div class="calc-grade">
+          <button type="button" class="calc-btn calc-btn--fn" id="calcBtnAC">AC</button>
+          <button type="button" class="calc-btn calc-btn--fn" id="calcBtnNeg">+/−</button>
+          <button type="button" class="calc-btn calc-btn--fn" id="calcBtnPct">%</button>
+          <button type="button" class="calc-btn calc-btn--op" data-op="÷">÷</button>
+
+          <button type="button" class="calc-btn calc-btn--num" data-num="7">7</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num="8">8</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num="9">9</button>
+          <button type="button" class="calc-btn calc-btn--op" data-op="×">×</button>
+
+          <button type="button" class="calc-btn calc-btn--num" data-num="4">4</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num="5">5</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num="6">6</button>
+          <button type="button" class="calc-btn calc-btn--op" data-op="−">−</button>
+
+          <button type="button" class="calc-btn calc-btn--num" data-num="1">1</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num="2">2</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num="3">3</button>
+          <button type="button" class="calc-btn calc-btn--op" data-op="+">+</button>
+
+          <button type="button" class="calc-btn calc-btn--num calc-btn--zero" data-num="0">0</button>
+          <button type="button" class="calc-btn calc-btn--num" data-num=".">.</button>
+          <button type="button" class="calc-btn calc-btn--igual" id="calcBtnIgual">=</button>
+        </div>
+      </div>
+
+      </div><!-- fim planm-calc-layout -->
+
+    </main>
+  </div>
+
+  <!-- MODAL: REGISTRAR ENTRADA/SAÍDA DE ESTOQUE -->
+  <div class="modal-backdrop" id="movimentacaoBackdrop" hidden></div>
+
+  <div class="modal-painel" id="movimentacaoPainel" hidden>
+    <button type="button" class="modal-fechar" id="movimentacaoFechar" aria-label="Fechar">×</button>
+    <h3 id="movimentacaoTitulo">Registrar entrada</h3>
+    <p><span id="movimentacaoLabelTipo">Ingrediente</span>: <strong id="movimentacaoNomeIngrediente"></strong></p>
+    <p>Estoque atual: <strong id="movimentacaoEstoqueAtual"></strong></p>
+
+    <form id="formMovimentacao">
+      <label>
+        Quantidade
+        <input type="number" id="campoMovimentacaoQuantidade" required min="0.01" step="0.01" placeholder="0">
+      </label>
+      <p class="mensagem-erro" id="movimentacaoErro"></p>
+      <button type="submit" class="botao-primario" id="botaoConfirmarMovimentacao">Confirmar</button>
+    </form>
+  </div>
+
+  <!-- GERENCIAR CARDÁPIO -->
+  <div class="painel" id="painelProdutos" hidden>
+
+    <header class="painel-topo">
+      <div class="painel-titulo">
+        <h1>Gerenciar Cardápio</h1>
+        <p>Flabelli Confeitaria</p>
+      </div>
+      <div class="painel-acoes">
+        <button type="button" class="botao-secundario" data-ir-para="painelHome">← Voltar</button>
+        <a class="botao-secundario" href="cardapio.html">Ver cardápio</a>
+      </div>
+    </header>
+
+    <main class="painel-conteudo painel-conteudo-cardapio">
+
+      <!-- FORMULÁRIO -->
+      <section class="painel-card">
+        <h2 id="formTitulo">Novo produto</h2>
+        <p class="mensagem-erro" id="formErro"></p>
+
+        <form id="formProduto">
+          <input type="hidden" id="produtoId">
+
+          <label class="campo-full">
+            Nome do produto
+            <input type="text" id="campoNome" required placeholder="Ex: Bolo de Chocolate">
+          </label>
+
+          <label>
+            Categoria
+            <select id="campoCategoria" required>
+              <!-- Opções carregadas dinamicamente pelo admin.js -->
+            </select>
+          </label>
+
+          <label>
+            Preço (R$)
+            <input type="number" id="campoPreco" required min="0" step="0.01" placeholder="0,00">
+          </label>
+
+          <div class="campo-desconto-wrapper">
+            <label class="campo-desconto-label">
+              Desconto
+              <div class="campo-desconto-linha">
+                <input type="number" id="campoDesconto" min="0" max="99" step="1" placeholder="0">
+                <span class="campo-desconto-pct">%</span>
+              </div>
+            </label>
+            <p class="campo-desconto-preview" id="descontoPreview" hidden></p>
+          </div>
+
+          <label>
+            Quantidade em estoque
+            <input type="number" id="campoEstoque" min="0" step="1" placeholder="0">
+          </label>
+
+          <label class="campo-full">
+            Descrição
+            <textarea id="campoDescricao" rows="3" placeholder="Descreva o produto..."></textarea>
+          </label>
+
+          <div class="campo-imagem campo-full">
+            <span class="campo-imagem-label">Fotos do produto</span>
+
+            <!-- EDITOR PRINCIPAL (estilo Instagram) -->
+            <div class="foto-editor">
+
+              <!-- Frame grande para reposicionamento -->
+              <div class="foto-frame" id="fotoFrame">
+                <!-- Estado vazio -->
+                <div class="foto-frame-vazio" id="fotoFrameVazio">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.82 0L6 21"/></svg>
+                  <p>Adicione fotos abaixo</p>
+                </div>
+
+                <!-- Preview da foto selecionada -->
+                <div class="foto-repo" id="fotoRepo" hidden>
+                  <img id="fotoEditorImg" alt="Foto do produto" crossorigin="anonymous">
+                </div>
+              </div>
+
+              <!-- Barra de controles abaixo do frame -->
+              <div class="foto-controles-barra" id="fotoBarra" hidden>
+                <span class="foto-contador" id="fotoContador"></span>
+                <div class="foto-acoes">
+                  <button type="button" class="foto-acao-btn" id="fotoBtnEsq" title="Foto anterior">‹</button>
+                  <button type="button" class="foto-acao-btn" id="fotoBtnDir" title="Próxima foto">›</button>
+                  <button type="button" class="foto-acao-btn foto-acao-recortar" id="fotoBtnRecortar" title="Recortar foto">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+                    Recortar
+                  </button>
+                  <button type="button" class="foto-acao-btn foto-acao-capa" id="fotoBtnCapa" title="Definir como capa">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <span id="fotoBtnCapaLabel">Definir como capa</span>
+                  </button>
+                  <button type="button" class="foto-acao-btn foto-acao-remover" id="fotoBtnRemover" title="Remover foto">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                    Remover
+                  </button>
+                </div>
+              </div>
+
+              <!-- Faixa de miniaturas -->
+              <div class="foto-strip" id="fotoStrip">
+                <!-- Thumbnails gerados pelo JS -->
+                <button type="button" class="foto-strip-add" id="fotoBtnAdicionar" title="Adicionar foto">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <input type="file" id="campoImagemArquivo" accept="image/*" multiple hidden>
+            <p class="mensagem-status upload-status" id="uploadStatus"></p>
+          </div>
+
+          <label class="campo-switch campo-full">
+            <span class="switch">
+              <input type="checkbox" id="campoEsgotado">
+              <span class="switch-trilho"></span>
+            </span>
+            Marcar produto como esgotado
+          </label>
+
+          <div class="form-acoes campo-full">
+            <button type="submit" class="botao-primario" id="botaoSalvar">Adicionar produto</button>
+            <button type="button" class="botao-secundario" id="botaoCancelar" hidden>Cancelar edição</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- LISTA DE PRODUTOS -->
+      <section class="painel-card">
+        <div class="painel-card-cabecalho">
+          <h2>Produtos cadastrados <span class="contagem-badge" id="contagemProdutos">0</span></h2>
+          <div class="busca-produto">
+            <input type="search" id="campoBuscaProduto" placeholder="Buscar produto...">
+          </div>
+        </div>
+        <div class="lista-produtos" id="listaAdminProdutos">
+          <p class="mensagem-status">Carregando produtos...</p>
+        </div>
+      </section>
+
+      <!-- GERENCIAR CATEGORIAS -->
+      <section class="painel-card">
+        <h2>Categorias do Cardápio</h2>
+        <p class="categorias-descricao">Gerencie as categorias exibidas no cardápio. As alterações aparecem automaticamente para os clientes.</p>
+
+        <div class="lista-categorias-admin" id="listaCategorias"></div>
+
+        <form id="formCategoria" class="form-nova-categoria">
+          <h3>Adicionar nova categoria</h3>
+          <div class="form-categoria-campos">
+            <label>
+              Nome
+              <input type="text" id="campoCategoriaNome" required placeholder="Ex: Tortas">
+            </label>
+            <label class="label-emoji-categoria">
+              Emoji
+              <div class="emoji-picker-wrapper">
+                <button type="button" class="emoji-trigger" id="emojiTrigger" title="Escolher emoji">🥧</button>
+                <div class="emoji-picker-popup" id="emojiPickerPopup" hidden>
+                  <emoji-picker id="emojiPicker"></emoji-picker>
+                </div>
+              </div>
+              <input type="hidden" id="campoCategoriaEmoji" value="🥧">
+            </label>
+            <button type="submit" class="botao-primario botao-adicionar-categoria">Adicionar</button>
+          </div>
+          <p class="mensagem-erro" id="categoriaErro"></p>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: CORTE DE FOTO (Cropper.js) -->
+  <div class="corte-backdrop" id="corteBackdrop" hidden></div>
+  <div class="corte-modal" id="corteModal" hidden>
+    <div class="corte-header">
+      <button type="button" class="corte-btn-pular" id="corteBtnFechar">Pular</button>
+      <span class="corte-titulo" id="corteTitulo">Ajustar foto</span>
+      <button type="button" class="corte-btn-confirmar" id="corteBtnConfirmar">Confirmar</button>
+    </div>
+    <div class="corte-area">
+      <div class="corte-wrapper">
+        <img id="corteImg" alt="" crossorigin="anonymous">
+      </div>
+    </div>
+    <div class="corte-aspectos">
+      <button type="button" class="corte-aspecto ativo" data-ratio="1">1:1</button>
+      <button type="button" class="corte-aspecto" data-ratio="1.3333">4:3</button>
+      <button type="button" class="corte-aspecto" data-ratio="0.75">3:4</button>
+      <button type="button" class="corte-aspecto" data-ratio="NaN">Livre</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

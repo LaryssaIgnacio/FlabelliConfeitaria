@@ -1,0 +1,448 @@
+:root {
+  --amarelo: #FEF08A;
+  --amarelo-claro: #FEF9C3;
+  --laranja: #FDBA74;
+  --texto: #4A3428;
+  --texto-suave: #9C8576;
+  --branco: #FFFFFF;
+  --erro: #E0584A;
+  --borda: rgba(74, 52, 40, 0.12);
+  --sombra: 0 2px 16px rgba(74, 52, 40, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #FFFDF5 0%, var(--amarelo-claro) 100%);
+  color: var(--texto);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 100px;
+}
+
+/* ===== TOPO ===== */
+.fp-topo {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(255, 253, 245, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--borda);
+}
+
+.fp-voltar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  text-decoration: none;
+  transition: background 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.fp-voltar:hover {
+  background: var(--amarelo-claro);
+  box-shadow: var(--sombra);
+}
+
+.fp-voltar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.fp-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--laranja);
+  box-shadow: 0 2px 8px rgba(253, 186, 116, 0.3);
+}
+
+.fp-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fp-topo-placeholder {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+/* ===== MAIN ===== */
+.fp-main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== SAUDAÇÃO ===== */
+.fp-saudacao {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 0 8px;
+}
+
+.fp-saudacao-icone {
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.fp-titulo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--texto);
+  line-height: 1.2;
+}
+
+.fp-subtitulo {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-top: 2px;
+}
+
+/* ===== CARDS ===== */
+.fp-card {
+  background: var(--branco);
+  border-radius: 18px;
+  border: 1px solid var(--borda);
+  box-shadow: var(--sombra);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fp-card-titulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== ITENS DO PEDIDO ===== */
+.fp-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fp-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #FFFBF0 0%, #FEF9C3 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(253, 186, 116, 0.25);
+}
+
+.fp-item-nome {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texto);
+  flex: 1;
+  min-width: 0;
+}
+
+.fp-item-preco {
+  font-size: 14px;
+  font-weight: 700;
+  color: #92400E;
+  flex-shrink: 0;
+}
+
+.fp-total-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--borda);
+  margin-top: 2px;
+}
+
+.fp-total-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fp-total-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--texto);
+  font-family: 'Poppins', sans-serif;
+}
+
+.fp-carrinho-vazio {
+  text-align: center;
+  font-size: 14px;
+  color: var(--texto-suave);
+  padding: 12px 0;
+  line-height: 1.8;
+}
+
+.fp-carrinho-vazio a {
+  color: #92400E;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ===== PAGAMENTO ===== */
+.fp-pagamentos {
+  display: flex;
+  gap: 10px;
+}
+
+.fp-pag-opcao {
+  flex: 1;
+  cursor: pointer;
+}
+
+.fp-pag-opcao input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.fp-pag-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px;
+  height: 90px;
+  border-radius: 14px;
+  border: 2px solid var(--borda);
+  background: #FAFAF7;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fp-pag-card:hover {
+  border-color: var(--laranja);
+  background: #FFFBF0;
+}
+
+.fp-pag-card.ativo {
+  border-color: var(--laranja);
+  background: linear-gradient(135deg, #FFF7ED 0%, #FEF9C3 100%);
+  box-shadow: 0 0 0 3px rgba(253, 186, 116, 0.25);
+}
+
+.fp-pag-icone {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.fp-pag-nome {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto);
+  line-height: 1.2;
+}
+
+.fp-pag-detalhe {
+  font-size: 10px;
+  color: var(--texto-suave);
+  line-height: 1.2;
+}
+
+/* ===== FORMULÁRIO ===== */
+.fp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fp-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fp-campo-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 480px) {
+  .fp-campo-linha {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fp-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fp-label-opcional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+
+.fp-input {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--texto);
+  background: #FAFAF7;
+  border: 1.5px solid var(--borda);
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  -webkit-appearance: none;
+}
+
+.fp-input::placeholder {
+  color: rgba(156, 133, 118, 0.6);
+}
+
+.fp-input:focus {
+  border-color: var(--laranja);
+  background: var(--branco);
+  box-shadow: 0 0 0 3px rgba(253, 186, 116, 0.2);
+}
+
+.fp-erro {
+  font-size: 13px;
+  color: var(--erro);
+  font-weight: 500;
+  padding: 8px 12px;
+  background: rgba(224, 88, 74, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(224, 88, 74, 0.2);
+}
+
+/* ===== BOTÃO ENVIAR ===== */
+.fp-rodape {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 16px 20px;
+  background: rgba(255, 253, 245, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--borda);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fp-aviso-frete {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.fp-btn-enviar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: var(--branco);
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.12s, box-shadow 0.18s;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  letter-spacing: 0.01em;
+}
+
+.fp-btn-enviar:hover:not(:disabled) {
+  opacity: 0.92;
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.45);
+  transform: translateY(-1px);
+}
+
+.fp-btn-enviar:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 12px rgba(37, 211, 102, 0.3);
+}
+
+.fp-btn-enviar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 400px) {
+  .fp-pagamentos {
+    gap: 7px;
+  }
+
+  .fp-pag-card {
+    padding: 12px 4px;
+  }
+
+  .fp-pag-icone {
+    font-size: 18px;
+  }
+
+  .fp-pag-nome {
+    font-size: 12px;
+  }
+}

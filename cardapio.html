@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FEF08A">
+  <link rel="icon" type="image/jpeg" href="img/logoteste.jpeg">
+  <meta name="description" content="Cardápio - Flabelli Confeitaria">
+  <title>Cardápio | Flabelli Confeitaria</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="cardapio.css">
+</head>
+<body>
+
+  <!-- TELA DE BOAS-VINDAS -->
+  <div class="boas-vindas" id="boasVindas">
+    <div class="boas-vindas-conteudo">
+      <div class="boas-vindas-icone">🍰</div>
+      <h2>Bem-vindos(as)!</h2>
+      <p>Confira nosso cardápio feito à mão com muito carinho ✨</p>
+    </div>
+  </div>
+
+  <div class="pagina">
+
+    <!-- CABEÇALHO -->
+    <header class="topo">
+      <a class="voltar" href="index.html" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+
+      <div class="topo-direita">
+        <button type="button" class="cadastro-btn" id="botaoCadastro" aria-label="Cadastro de cliente" title="Cadastre-se">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
+
+        <a class="admin-btn" href="admin.html" aria-label="Área administrativa" title="Área administrativa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        </a>
+      </div>
+
+      <!-- CADASTRO / LOGIN / PERFIL -->
+      <div class="cadastro-backdrop" id="cadastroBackdrop" hidden></div>
+
+      <!-- PAINEL: CRIAR CONTA / ENTRAR -->
+      <div class="cadastro-painel" id="cadastroPainel" hidden>
+        <button type="button" class="cadastro-fechar" id="cadastroFechar" aria-label="Fechar">×</button>
+
+        <div class="auth-abas">
+          <button type="button" class="auth-aba ativa" id="abaRegistro" data-aba="registro">Criar conta</button>
+          <button type="button" class="auth-aba" id="abaLogin" data-aba="login">Entrar</button>
+        </div>
+
+        <!-- ABA: CRIAR CONTA -->
+        <div id="painelRegistro">
+          <p class="auth-subtitulo">Cadastro grátis para receber novidades e promoções 💛</p>
+          <form id="formCadastro">
+            <label>
+              E-mail
+              <input type="email" id="cadastroEmail" required placeholder="seuemail@exemplo.com" autocomplete="email">
+            </label>
+            <label>
+              Criar senha
+              <input type="password" id="cadastroSenha" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+            </label>
+            <div class="cadastro-linha">
+              <label>
+                Data de nascimento
+                <input type="date" id="cadastroNascimento">
+              </label>
+              <label>
+                Gênero
+                <select id="cadastroGenero">
+                  <option value="">Prefiro não informar</option>
+                  <option value="feminino">Feminino</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </label>
+            </div>
+            <p class="cadastro-mensagem" id="cadastroMensagem"></p>
+            <button type="submit" class="botao-cadastro">Criar conta</button>
+          </form>
+        </div>
+
+        <!-- ABA: ENTRAR -->
+        <div id="painelLogin" hidden>
+          <p class="auth-subtitulo">Bem-vinda de volta! 👋</p>
+          <form id="formLogin">
+            <label>
+              E-mail
+              <input type="email" id="loginEmail" required placeholder="seuemail@exemplo.com" autocomplete="email">
+            </label>
+            <label>
+              Senha
+              <input type="password" id="loginSenha" required placeholder="••••••••" autocomplete="current-password">
+            </label>
+            <p class="cadastro-mensagem" id="loginMensagem"></p>
+            <button type="submit" class="botao-cadastro">Entrar</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- PAINEL: PERFIL LOGADO -->
+      <div class="cadastro-painel perfil-painel" id="perfilPainel" hidden>
+        <button type="button" class="cadastro-fechar" id="perfilFechar" aria-label="Fechar">×</button>
+        <div class="perfil-avatar" id="perfilAvatar">?</div>
+        <p class="perfil-email" id="perfilEmail"></p>
+        <p class="perfil-label">Conta ativa — você receberá nossas novidades 💛</p>
+        <button type="button" class="botao-sair" id="botaoSair">Sair da conta</button>
+      </div>
+
+      <div class="topo-conteudo">
+        <!-- LOGO PEQUENA: troque o src pela logo da marca -->
+        <div class="logo-topo">
+          <img src="img/logoteste.jpeg" alt="Flabelli Confeitaria">
+        </div>
+
+        <h1>Cardápio</h1>
+        <p> 🎂 Muito recheio, sabor inesquecível e carinho em cada detalhe!</p>
+      </div>
+    </header>
+
+    <!-- CATEGORIAS -->
+    <div class="categorias-faixa">
+      <nav class="categorias" id="navCategorias">
+        <!-- Categorias carregadas dinamicamente pelo cardapio.js -->
+      </nav>
+    </div>
+
+    <!-- BUSCA DE PRODUTOS -->
+    <div class="busca-faixa">
+      <div class="busca-wrapper">
+        <svg class="busca-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          id="campoBuscaProduto"
+          class="busca-input"
+          placeholder="Buscar produto..."
+          autocomplete="off"
+          aria-label="Buscar produto"
+        >
+        <button type="button" class="busca-limpar" id="botaoLimparBusca" hidden aria-label="Limpar busca">×</button>
+      </div>
+    </div>
+
+    <!-- PRODUTOS (carregados dinamicamente em cardapio.js) -->
+    <main class="produtos" id="listaProdutos">
+      <p class="produtos-status">Carregando cardápio...</p>
+    </main>
+
+    <!-- RODAPÉ / CTA -->
+    <footer class="rodape">
+      <p class="rodape-texto">Gostou de algo? Adicione no seu carrinho e finalize o pedido diretamente pelo WhatsApp</p>
+    </footer>
+
+    <!-- DIREITOS AUTORAIS -->
+    <div class="direitos">
+      <p>© 2026 Flabelli Confeitaria</p>
+      <p>Powered by <span class="direitos-studio">Ignis Studio</span></p>
+    </div>
+
+  </div>
+
+  <!-- TOAST: SUGESTÃO DE CADASTRO -->
+  <div class="toast-cadastro" id="toastCadastro" hidden>
+    <button type="button" class="toast-fechar" id="toastFechar" aria-label="Fechar">×</button>
+    <div class="toast-topo">
+      <span class="toast-icone">🎁</span>
+      <div class="toast-conteudo">
+        <strong class="toast-titulo">Receba ofertas em primeira mão!</strong>
+        <p class="toast-texto">Crie sua conta grátis e fique por dentro das nossas promoções, lançamentos e descontos exclusivos.</p>
+        <button type="button" class="toast-botao" id="toastBotaoCadastro">Criar conta grátis →</button>
+      </div>
+    </div>
+    <div class="toast-progresso" id="toastProgresso"></div>
+  </div>
+
+  <!-- CARRINHO DE PEDIDOS -->
+  <div class="carrinho-backdrop" id="carrinhoBackdrop" hidden></div>
+
+  <button type="button" class="carrinho-flutuante" id="botaoCarrinho" aria-label="Ver carrinho de pedidos">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="carrinho-contador" id="carrinhoContador" hidden>0</span>
+  </button>
+
+  <div class="carrinho-painel" id="carrinhoPainel" hidden>
+    <div class="carrinho-cabecalho">
+      <h3>Seu pedido</h3>
+      <button type="button" class="cadastro-fechar" id="carrinhoFechar" aria-label="Fechar">×</button>
+    </div>
+
+    <div class="carrinho-itens" id="carrinhoItens">
+      <p class="carrinho-vazio">Seu carrinho está vazio. Toque no "+" dos produtos para adicionar.</p>
+    </div>
+
+    <div class="carrinho-rodape">
+      <div class="carrinho-total">
+        <span>Total</span>
+        <strong id="carrinhoTotal">R$ 0,00</strong>
+      </div>
+      <p class="cadastro-mensagem" id="carrinhoMensagem"></p>
+      <button type="button" class="botao-cadastro botao-finalizar" id="botaoFinalizarPedido" disabled>Finalizar pedido →</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="cardapio.js"></script>
+</body>
+</html>
