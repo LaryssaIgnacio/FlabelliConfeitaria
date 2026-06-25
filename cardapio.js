@@ -991,16 +991,18 @@ function renderizarListaAvaliacoes(lista) {
     const topo = document.createElement('div');
     topo.className = 'avaliacao-item-topo';
 
+    const nomeExibido = avaliacao.cliente_nome || _mascararEmail(avaliacao.cliente_email);
+
     const avatar = document.createElement('div');
     avatar.className = 'avaliacao-avatar';
-    avatar.textContent = (avaliacao.cliente_email || '?')[0].toUpperCase();
+    avatar.textContent = nomeExibido[0].toUpperCase();
 
     const infoTopo = document.createElement('div');
     infoTopo.className = 'avaliacao-info-topo';
 
     const nomeEl = document.createElement('span');
     nomeEl.className = 'avaliacao-nome';
-    nomeEl.textContent = _mascararEmail(avaliacao.cliente_email);
+    nomeEl.textContent = nomeExibido;
 
     const dataEl = document.createElement('span');
     dataEl.className = 'avaliacao-data';
@@ -1071,9 +1073,14 @@ async function enviarAvaliacao(evento) {
   evento.preventDefault();
   const erroEl = document.getElementById('avaliacaoErro');
   const botao = document.getElementById('botaoEnviarAvaliacao');
+  const nome = document.getElementById('campoNomeAvaliacao').value.trim();
   const comentario = document.getElementById('campoComentarioAvaliacao').value.trim();
   erroEl.textContent = '';
 
+  if (!nome) {
+    erroEl.textContent = 'Informe seu nome.';
+    return;
+  }
   if (_notaSelecionada === 0) {
     erroEl.textContent = 'Selecione de 1 a 5 estrelas.';
     return;
@@ -1097,6 +1104,7 @@ async function enviarAvaliacao(evento) {
   const { error } = await supabaseClient.from('avaliacoes').insert([{
     produto_id: _produtoModalAtual.id,
     cliente_email: email,
+    cliente_nome: nome,
     nota: _notaSelecionada,
     comentario,
   }]);
@@ -1110,6 +1118,7 @@ async function enviarAvaliacao(evento) {
   }
 
   document.getElementById('campoComentarioAvaliacao').value = '';
+  document.getElementById('campoNomeAvaliacao').value = '';
   _resetarEstrelasInput();
   carregarAvaliacoes(_produtoModalAtual.id);
 }

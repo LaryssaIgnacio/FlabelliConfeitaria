@@ -810,7 +810,8 @@ function criarItemAvaliacaoAdmin(avaliacao) {
 
   const meta = document.createElement('div');
   meta.className = 'avaliacao-admin-meta';
-  meta.textContent = `${avaliacao.cliente_email} · ${new Date(avaliacao.criado_em).toLocaleDateString('pt-BR')}`;
+  const nomeOuEmail = avaliacao.cliente_nome ? `${avaliacao.cliente_nome} (${avaliacao.cliente_email})` : avaliacao.cliente_email;
+  meta.textContent = `${nomeOuEmail} · ${new Date(avaliacao.criado_em).toLocaleDateString('pt-BR')}`;
 
   const comentario = document.createElement('p');
   comentario.className = 'avaliacao-admin-comentario';
