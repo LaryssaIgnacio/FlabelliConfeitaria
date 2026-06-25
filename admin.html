@@ -731,6 +731,24 @@
             <textarea id="campoDescricao" rows="3" placeholder="Descreva o produto..."></textarea>
           </label>
 
+          <div class="campo-tags campo-full">
+            <span class="campo-tags-label">🥛 Ingredientes</span>
+            <div class="campo-tags-linha">
+              <input type="text" id="campoNovoIngrediente" placeholder="Ex: Massa de chocolate" maxlength="60">
+              <button type="button" class="botao-tag-add" id="botaoAddIngrediente">+ Adicionar</button>
+            </div>
+            <div class="lista-tags" id="listaTagsIngredientes"></div>
+          </div>
+
+          <div class="campo-tags campo-full">
+            <span class="campo-tags-label">⚠️ Informações importantes</span>
+            <div class="campo-tags-linha">
+              <input type="text" id="campoNovaInfo" placeholder="Ex: Contém glúten" maxlength="60">
+              <button type="button" class="botao-tag-add" id="botaoAddInfo">+ Adicionar</button>
+            </div>
+            <div class="lista-tags" id="listaTagsInfo"></div>
+          </div>
+
           <div class="campo-imagem campo-full">
             <span class="campo-imagem-label">Fotos do produto</span>
 
@@ -810,6 +828,59 @@
         </div>
         <div class="lista-produtos" id="listaAdminProdutos">
           <p class="mensagem-status">Carregando produtos...</p>
+        </div>
+      </section>
+
+      <!-- AVALIAÇÕES DOS CLIENTES -->
+      <section class="painel-card">
+        <div class="painel-card-cabecalho">
+          <h2>⭐ Avaliações dos Clientes <span class="contagem-badge" id="contagemAvaliacoes">0</span></h2>
+          <div class="busca-produto">
+            <select id="filtroNotaAvaliacao">
+              <option value="todas">Todas as notas</option>
+              <option value="negativas">⚠️ Apenas negativas (1-2★)</option>
+              <option value="5">⭐⭐⭐⭐⭐ 5 estrelas</option>
+              <option value="4">⭐⭐⭐⭐ 4 estrelas</option>
+              <option value="3">⭐⭐⭐ 3 estrelas</option>
+              <option value="2">⭐⭐ 2 estrelas</option>
+              <option value="1">⭐ 1 estrela</option>
+            </select>
+          </div>
+        </div>
+        <p class="estoque-produtos-desc">Veja, responda e remova avaliações deixadas pelos clientes no cardápio.</p>
+        <div class="lista-avaliacoes-admin" id="listaAvaliacoesAdmin">
+          <p class="mensagem-status">Carregando avaliações...</p>
+        </div>
+      </section>
+
+      <!-- FRASE DO CARDÁPIO -->
+      <section class="painel-card">
+        <h2>✏️ Frase do Cardápio</h2>
+        <p class="estoque-produtos-desc">Personalize a frase que aparece abaixo da logo, no topo do cardápio visto pelos clientes.</p>
+
+        <div class="campo-legenda-linha">
+          <label class="label-emoji-categoria campo-legenda-emoji-wrap">
+            Emoji
+            <div class="emoji-picker-wrapper">
+              <button type="button" class="emoji-trigger" id="emojiTriggerLegenda" title="Escolher emoji">🎂</button>
+              <div class="emoji-picker-popup" id="emojiPickerPopupLegenda" hidden>
+                <emoji-picker id="emojiPickerLegenda"></emoji-picker>
+              </div>
+            </div>
+            <input type="hidden" id="campoLegendaEmoji" value="🎂">
+          </label>
+
+          <label class="campo-legenda-texto-wrap">
+            Frase
+            <input type="text" id="campoLegendaTexto" maxlength="120" placeholder="Ex: Muito recheio, sabor inesquecível e carinho em cada detalhe!">
+          </label>
+        </div>
+
+        <p class="campo-legenda-preview" id="legendaPreview"></p>
+
+        <div class="form-acoes">
+          <button type="button" class="botao-primario" id="botaoSalvarLegenda">Salvar frase</button>
+          <span class="prec-salvo-msg" id="legendaSalvoMsg" hidden>✓ Salvo com sucesso!</span>
         </div>
       </section>
 

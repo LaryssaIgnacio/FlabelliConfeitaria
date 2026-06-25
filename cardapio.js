@@ -139,6 +139,10 @@ function criarCardProduto(produto) {
   const article = document.createElement('article');
   article.className = 'produto';
   article.dataset.categoria = produto.categoria;
+  article.addEventListener('click', (e) => {
+    if (e.target.closest('.produto-adicionar') || e.target.closest('.carrossel-btn')) return;
+    abrirModalProduto(produto);
+  });
 
   if (produto.esgotado) {
     article.classList.add('produto-esgotado');
@@ -862,10 +866,29 @@ function aplicarFiltrosCombinados() {
   }
 }
 
+// Busca a frase personalizada que aparece abaixo da logo
+async function carregarLegendaCardapio() {
+  const elLegenda = document.getElementById('legendaCardapio');
+  if (!elLegenda || typeof supabaseClient === 'undefined' || !supabaseClient) return;
+
+  const { data, error } = await supabaseClient
+    .from('configuracoes')
+    .select('chave, valor')
+    .in('chave', ['legenda_texto', 'legenda_emoji']);
+
+  if (error || !data) return;
+
+  const texto = data.find((d) => d.chave === 'legenda_texto')?.valor;
+  const emoji = data.find((d) => d.chave === 'legenda_emoji')?.valor;
+
+  if (texto) elLegenda.textContent = `${emoji || ''} ${texto}`.trim();
+}
+
 // Carrega o cardápio e configura o filtro de categorias
 document.addEventListener('DOMContentLoaded', () => {
   construirNavCategorias();
   carregarProdutos();
+  carregarLegendaCardapio();
 
   // Busca de produtos
   const campoBusca = document.getElementById('campoBuscaProduto');
@@ -900,5 +923,356 @@ document.addEventListener('DOMContentLoaded', () => {
       el.appendChild(ripple);
       ripple.addEventListener('animationend', () => ripple.remove());
     });
+  });
+});
+
+// ===== MODAL DE DETALHES DO PRODUTO + AVALIAÇÕES =====
+let _produtoModalAtual = null;
+let _notaSelecionada = 0;
+
+function _renderizarEstrelasFixas(container, nota) {
+  container.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const estrela = document.createElement('span');
+    estrela.className = 'estrela-fixa' + (i <= Math.round(nota) ? ' estrela-fixa-ativa' : '');
+    estrela.textContent = '★';
+    container.appendChild(estrela);
+  }
+}
+
+function _mascararEmail(email) {
+  if (!email) return 'Cliente';
+  const [usuario, dominio] = email.split('@');
+  if (!dominio) return email;
+  const visivel = usuario.slice(0, 2);
+  return `${visivel}${'*'.repeat(Math.max(usuario.length - 2, 3))}@${dominio}`;
+}
+
+function _formatarDataAvaliacao(iso) {
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function renderizarResumoAvaliacoes(lista) {
+  const resumo = document.getElementById('avaliacaoResumo');
+  const mediaEl = document.getElementById('avaliacaoMedia');
+  const estrelasEl = document.getElementById('avaliacaoEstrelasResumo');
+  const contagemEl = document.getElementById('avaliacaoContagem');
+  if (!resumo) return;
+
+  if (!lista || lista.length === 0) {
+    resumo.hidden = true;
+    return;
+  }
+
+  const media = lista.reduce((acc, a) => acc + Number(a.nota || 0), 0) / lista.length;
+  mediaEl.textContent = media.toFixed(1);
+  _renderizarEstrelasFixas(estrelasEl, media);
+  contagemEl.textContent = lista.length === 1 ? '1 avaliação' : `${lista.length} avaliações`;
+  resumo.hidden = false;
+}
+
+function renderizarListaAvaliacoes(lista) {
+  const container = document.getElementById('avaliacaoLista');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!lista || lista.length === 0) {
+    container.innerHTML = '<p class="mensagem-status">Nenhuma avaliação ainda. Seja a primeira pessoa a avaliar! 😊</p>';
+    return;
+  }
+
+  lista.forEach((avaliacao) => {
+    const item = document.createElement('div');
+    item.className = 'avaliacao-item';
+
+    const topo = document.createElement('div');
+    topo.className = 'avaliacao-item-topo';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avaliacao-avatar';
+    avatar.textContent = (avaliacao.cliente_email || '?')[0].toUpperCase();
+
+    const infoTopo = document.createElement('div');
+    infoTopo.className = 'avaliacao-info-topo';
+
+    const nomeEl = document.createElement('span');
+    nomeEl.className = 'avaliacao-nome';
+    nomeEl.textContent = _mascararEmail(avaliacao.cliente_email);
+
+    const dataEl = document.createElement('span');
+    dataEl.className = 'avaliacao-data';
+    dataEl.textContent = _formatarDataAvaliacao(avaliacao.criado_em);
+
+    infoTopo.append(nomeEl, dataEl);
+    topo.append(avatar, infoTopo);
+
+    const estrelas = document.createElement('div');
+    estrelas.className = 'avaliacao-estrelas-item';
+    _renderizarEstrelasFixas(estrelas, avaliacao.nota);
+
+    const comentario = document.createElement('p');
+    comentario.className = 'avaliacao-comentario';
+    comentario.textContent = avaliacao.comentario || '';
+
+    item.append(topo, estrelas, comentario);
+
+    if (avaliacao.resposta_loja) {
+      const resposta = document.createElement('div');
+      resposta.className = 'resposta-loja-cliente';
+
+      const titulo = document.createElement('strong');
+      titulo.textContent = '💬 Resposta da Flabelli Confeitaria';
+
+      const texto = document.createElement('p');
+      texto.textContent = avaliacao.resposta_loja;
+
+      resposta.append(titulo, texto);
+      item.appendChild(resposta);
+    }
+
+    container.appendChild(item);
+  });
+}
+
+async function carregarAvaliacoes(produtoId) {
+  const container = document.getElementById('avaliacaoLista');
+  if (container) container.innerHTML = '<p class="mensagem-status">Carregando avaliações...</p>';
+
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+    renderizarListaAvaliacoes([]);
+    renderizarResumoAvaliacoes([]);
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from('avaliacoes')
+    .select('*')
+    .eq('produto_id', produtoId)
+    .order('criado_em', { ascending: false });
+
+  if (error) {
+    if (container) container.innerHTML = `<p class="mensagem-erro">Erro ao carregar avaliações: ${error.message}</p>`;
+    return;
+  }
+
+  renderizarResumoAvaliacoes(data);
+  renderizarListaAvaliacoes(data);
+}
+
+function _resetarEstrelasInput() {
+  _notaSelecionada = 0;
+  document.querySelectorAll('#avaliacaoEstrelasInput .estrela-btn').forEach((btn) => btn.classList.remove('estrela-btn-ativa'));
+}
+
+async function enviarAvaliacao(evento) {
+  evento.preventDefault();
+  const erroEl = document.getElementById('avaliacaoErro');
+  const botao = document.getElementById('botaoEnviarAvaliacao');
+  const comentario = document.getElementById('campoComentarioAvaliacao').value.trim();
+  erroEl.textContent = '';
+
+  if (_notaSelecionada === 0) {
+    erroEl.textContent = 'Selecione de 1 a 5 estrelas.';
+    return;
+  }
+  if (!comentario) {
+    erroEl.textContent = 'Escreva um comentário sobre o produto.';
+    return;
+  }
+  if (!_produtoModalAtual) return;
+
+  const { data: sessao } = await supabaseClient.auth.getSession();
+  const email = sessao?.session?.user?.email;
+  if (!email) {
+    erroEl.textContent = 'Sua sessão expirou. Faça login novamente.';
+    return;
+  }
+
+  botao.disabled = true;
+  botao.textContent = 'Enviando...';
+
+  const { error } = await supabaseClient.from('avaliacoes').insert([{
+    produto_id: _produtoModalAtual.id,
+    cliente_email: email,
+    nota: _notaSelecionada,
+    comentario,
+  }]);
+
+  botao.disabled = false;
+  botao.textContent = 'Enviar avaliação';
+
+  if (error) {
+    erroEl.textContent = `Erro ao enviar: ${error.message}`;
+    return;
+  }
+
+  document.getElementById('campoComentarioAvaliacao').value = '';
+  _resetarEstrelasInput();
+  carregarAvaliacoes(_produtoModalAtual.id);
+}
+
+async function abrirModalProduto(produto) {
+  _produtoModalAtual = produto;
+  _resetarEstrelasInput();
+
+  const backdrop = document.getElementById('produtoModalBackdrop');
+  const modal = document.getElementById('produtoModal');
+  if (!backdrop || !modal) return;
+
+  const cor = CORES_CATEGORIA[produto.categoria] || 'cor-amarelo';
+  const emoji = produto.emoji || EMOJI_CATEGORIA[produto.categoria] || '🍰';
+  const desconto = Number(produto.desconto) || 0;
+  const precoFinal = desconto > 0 ? produto.preco * (1 - desconto / 100) : produto.preco;
+
+  // Foto grande / carrossel
+  const fotoEl = document.getElementById('produtoModalFoto');
+  fotoEl.className = `produto-modal-foto ${cor}`;
+  fotoEl.innerHTML = '';
+
+  const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
+    ? [...produto.imagens].sort((a, b) => (b.capa ? 1 : 0) - (a.capa ? 1 : 0))
+    : produto.imagem_url
+      ? [{ url: produto.imagem_url, x: 50, y: 50 }]
+      : [];
+
+  if (imagens.length > 1) {
+    fotoEl.appendChild(criarCarrossel(imagens, produto.nome));
+  } else if (imagens.length === 1) {
+    const img = document.createElement('img');
+    img.src = imagens[0].url;
+    img.alt = produto.nome;
+    img.style.objectPosition = `${imagens[0].x ?? 50}% ${imagens[0].y ?? 50}%`;
+    fotoEl.appendChild(img);
+  } else {
+    const spanEmoji = document.createElement('span');
+    spanEmoji.textContent = emoji;
+    fotoEl.appendChild(spanEmoji);
+  }
+
+  // Nome / preço
+  document.getElementById('produtoModalNome').textContent = produto.nome;
+  const precoWrap = document.getElementById('produtoModalPrecoWrap');
+  precoWrap.innerHTML = '';
+  if (desconto > 0) {
+    const antigo = document.createElement('span');
+    antigo.className = 'produto-modal-preco-antigo';
+    antigo.textContent = formatarPreco(produto.preco);
+    precoWrap.appendChild(antigo);
+  }
+  const precoEl = document.createElement('span');
+  precoEl.className = 'produto-modal-preco';
+  precoEl.textContent = formatarPreco(precoFinal);
+  precoWrap.appendChild(precoEl);
+
+  // Descrição
+  document.getElementById('produtoModalDesc').textContent = produto.descricao || '';
+
+  // Ingredientes
+  const secaoIng = document.getElementById('produtoModalIngredientesSecao');
+  const listaIng = document.getElementById('produtoModalIngredientes');
+  const ingredientes = Array.isArray(produto.ingredientes) ? produto.ingredientes : [];
+  listaIng.innerHTML = '';
+  if (ingredientes.length > 0) {
+    ingredientes.forEach((texto) => {
+      const tag = document.createElement('span');
+      tag.className = 'produto-modal-tag';
+      tag.textContent = texto;
+      listaIng.appendChild(tag);
+    });
+    secaoIng.hidden = false;
+  } else {
+    secaoIng.hidden = true;
+  }
+
+  // Informações importantes
+  const secaoInfo = document.getElementById('produtoModalInfoSecao');
+  const listaInfo = document.getElementById('produtoModalInfo');
+  const infos = Array.isArray(produto.informacoes_importantes) ? produto.informacoes_importantes : [];
+  listaInfo.innerHTML = '';
+  if (infos.length > 0) {
+    infos.forEach((texto) => {
+      const tag = document.createElement('span');
+      tag.className = 'produto-modal-tag produto-modal-tag--alerta';
+      tag.textContent = texto;
+      listaInfo.appendChild(tag);
+    });
+    secaoInfo.hidden = false;
+  } else {
+    secaoInfo.hidden = true;
+  }
+
+  // Avaliações: verifica login
+  const formWrap = document.getElementById('avaliacaoFormWrap');
+  const loginAviso = document.getElementById('avaliacaoLoginAviso');
+  let logado = false;
+  if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+    const { data } = await supabaseClient.auth.getSession();
+    logado = !!data?.session?.user;
+  }
+  formWrap.hidden = !logado;
+  loginAviso.hidden = logado;
+
+  if (produto.id) carregarAvaliacoes(produto.id);
+
+  backdrop.hidden = false;
+  modal.hidden = false;
+  document.body.classList.add('sem-rolagem');
+}
+
+function fecharModalProduto() {
+  document.getElementById('produtoModalBackdrop').hidden = true;
+  document.getElementById('produtoModal').hidden = true;
+  document.body.classList.remove('sem-rolagem');
+  _produtoModalAtual = null;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('produtoModalFechar')?.addEventListener('click', fecharModalProduto);
+  document.getElementById('produtoModalBackdrop')?.addEventListener('click', fecharModalProduto);
+
+  document.querySelectorAll('#avaliacaoEstrelasInput .estrela-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      _notaSelecionada = Number(btn.dataset.valor);
+      document.querySelectorAll('#avaliacaoEstrelasInput .estrela-btn').forEach((b) => {
+        b.classList.toggle('estrela-btn-ativa', Number(b.dataset.valor) <= _notaSelecionada);
+      });
+    });
+  });
+
+  document.getElementById('formAvaliacao')?.addEventListener('submit', enviarAvaliacao);
+
+  // Seletor de emoji no comentário da avaliação
+  const emojiTriggerAvaliacao = document.getElementById('emojiTriggerAvaliacao');
+  const emojiPopupAvaliacao = document.getElementById('emojiPickerPopupAvaliacao');
+  const emojiPickerAvaliacao = document.getElementById('emojiPickerAvaliacao');
+  const campoComentario = document.getElementById('campoComentarioAvaliacao');
+
+  if (emojiTriggerAvaliacao && emojiPopupAvaliacao && emojiPickerAvaliacao && campoComentario) {
+    emojiTriggerAvaliacao.addEventListener('click', (e) => {
+      e.stopPropagation();
+      emojiPopupAvaliacao.hidden = !emojiPopupAvaliacao.hidden;
+    });
+
+    emojiPickerAvaliacao.addEventListener('emoji-click', (e) => {
+      const emoji = e.detail.unicode;
+      const inicio = campoComentario.selectionStart ?? campoComentario.value.length;
+      const fim = campoComentario.selectionEnd ?? campoComentario.value.length;
+      campoComentario.value = campoComentario.value.slice(0, inicio) + emoji + campoComentario.value.slice(fim);
+      const novaPos = inicio + emoji.length;
+      campoComentario.focus();
+      campoComentario.setSelectionRange(novaPos, novaPos);
+      emojiPopupAvaliacao.hidden = true;
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!emojiPopupAvaliacao.hidden && !emojiPopupAvaliacao.contains(e.target) && e.target !== emojiTriggerAvaliacao) {
+        emojiPopupAvaliacao.hidden = true;
+      }
+    });
+  }
+
+  document.getElementById('botaoLoginAvaliacao')?.addEventListener('click', () => {
+    fecharModalProduto();
+    document.getElementById('botaoCadastro')?.click();
   });
 });

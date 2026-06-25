@@ -94,6 +94,10 @@ const campoPreco = document.getElementById('campoPreco');
 const campoDesconto = document.getElementById('campoDesconto');
 const descontoPreview = document.getElementById('descontoPreview');
 const campoDescricao = document.getElementById('campoDescricao');
+const campoNovoIngrediente = document.getElementById('campoNovoIngrediente');
+const listaTagsIngredientes = document.getElementById('listaTagsIngredientes');
+const campoNovaInfo = document.getElementById('campoNovaInfo');
+const listaTagsInfo = document.getElementById('listaTagsInfo');
 const campoEstoque = document.getElementById('campoEstoque');
 const campoEsgotado = document.getElementById('campoEsgotado');
 const botaoSalvar = document.getElementById('botaoSalvar');
@@ -126,6 +130,76 @@ const BUCKET_IMAGENS = 'produtos';
 // Cada item: { arquivo: File|null, url: string, x: number, y: number, capa: boolean }
 let fotosAdmin = [];
 let fotoAtual = 0;
+
+// Tags do produto (ingredientes / informações importantes)
+let _tagsIngredientes = [];
+let _tagsInfo = [];
+
+function _criarTagChip(texto, onRemover) {
+  const chip = document.createElement('span');
+  chip.className = 'tag-chip';
+
+  const label = document.createElement('span');
+  label.textContent = texto;
+
+  const btnRemover = document.createElement('button');
+  btnRemover.type = 'button';
+  btnRemover.className = 'tag-chip-remover';
+  btnRemover.textContent = '×';
+  btnRemover.setAttribute('aria-label', `Remover ${texto}`);
+  btnRemover.addEventListener('click', onRemover);
+
+  chip.append(label, btnRemover);
+  return chip;
+}
+
+function renderizarTagsIngredientes() {
+  if (!listaTagsIngredientes) return;
+  listaTagsIngredientes.innerHTML = '';
+  if (_tagsIngredientes.length === 0) {
+    listaTagsIngredientes.innerHTML = '<p class="tags-vazio">Nenhum ingrediente adicionado ainda.</p>';
+    return;
+  }
+  _tagsIngredientes.forEach((texto, i) => {
+    listaTagsIngredientes.appendChild(_criarTagChip(texto, () => {
+      _tagsIngredientes.splice(i, 1);
+      renderizarTagsIngredientes();
+    }));
+  });
+}
+
+function renderizarTagsInfo() {
+  if (!listaTagsInfo) return;
+  listaTagsInfo.innerHTML = '';
+  if (_tagsInfo.length === 0) {
+    listaTagsInfo.innerHTML = '<p class="tags-vazio">Nenhuma informação adicionada ainda.</p>';
+    return;
+  }
+  _tagsInfo.forEach((texto, i) => {
+    listaTagsInfo.appendChild(_criarTagChip(texto, () => {
+      _tagsInfo.splice(i, 1);
+      renderizarTagsInfo();
+    }));
+  });
+}
+
+function adicionarTagIngrediente() {
+  const texto = campoNovoIngrediente.value.trim();
+  if (!texto) return;
+  _tagsIngredientes.push(texto);
+  campoNovoIngrediente.value = '';
+  renderizarTagsIngredientes();
+  campoNovoIngrediente.focus();
+}
+
+function adicionarTagInfo() {
+  const texto = campoNovaInfo.value.trim();
+  if (!texto) return;
+  _tagsInfo.push(texto);
+  campoNovaInfo.value = '';
+  renderizarTagsInfo();
+  campoNovaInfo.focus();
+}
 
 // Estado do crop modal
 let cropperInstance = null;
@@ -223,6 +297,11 @@ function limparFormulario() {
   botaoCancelar.hidden = true;
   formErro.textContent = '';
   if (descontoPreview) descontoPreview.hidden = true;
+
+  _tagsIngredientes = [];
+  _tagsInfo = [];
+  renderizarTagsIngredientes();
+  renderizarTagsInfo();
 
   fotosAdmin = [];
   fotoAtual = 0;
@@ -596,6 +675,11 @@ function preencherFormularioEdicao(produto) {
   campoDesconto.value = produto.desconto || 0;
   atualizarPreviewDesconto();
 
+  _tagsIngredientes = Array.isArray(produto.ingredientes) ? [...produto.ingredientes] : [];
+  _tagsInfo = Array.isArray(produto.informacoes_importantes) ? [...produto.informacoes_importantes] : [];
+  renderizarTagsIngredientes();
+  renderizarTagsInfo();
+
   campoImagemArquivo.value = '';
   uploadStatus.textContent = '';
 
@@ -699,6 +783,235 @@ async function removerProduto(id) {
   carregarProdutosAdmin();
 }
 
+let avaliacoesCache = [];
+
+function criarItemAvaliacaoAdmin(avaliacao) {
+  const item = document.createElement('div');
+  item.className = 'item-avaliacao-admin';
+
+  const linhaTopo = document.createElement('div');
+  linhaTopo.className = 'item-avaliacao-linha-topo';
+
+  const info = document.createElement('div');
+  info.className = 'avaliacao-admin-info';
+
+  const topo = document.createElement('div');
+  topo.className = 'avaliacao-admin-topo';
+
+  const produtoNome = document.createElement('span');
+  produtoNome.className = 'avaliacao-admin-produto';
+  produtoNome.textContent = avaliacao.produtos?.nome || 'Produto removido';
+
+  const estrelas = document.createElement('span');
+  estrelas.className = 'avaliacao-admin-estrelas';
+  estrelas.textContent = '★'.repeat(Number(avaliacao.nota) || 0) + '☆'.repeat(5 - (Number(avaliacao.nota) || 0));
+
+  topo.append(produtoNome, estrelas);
+
+  const meta = document.createElement('div');
+  meta.className = 'avaliacao-admin-meta';
+  meta.textContent = `${avaliacao.cliente_email} · ${new Date(avaliacao.criado_em).toLocaleDateString('pt-BR')}`;
+
+  const comentario = document.createElement('p');
+  comentario.className = 'avaliacao-admin-comentario';
+  comentario.textContent = avaliacao.comentario;
+
+  info.append(topo, meta, comentario);
+
+  const botaoRemover = document.createElement('button');
+  botaoRemover.type = 'button';
+  botaoRemover.className = 'botao-remover';
+  botaoRemover.title = 'Excluir avaliação';
+  botaoRemover.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  botaoRemover.addEventListener('click', () => removerAvaliacao(avaliacao.id));
+
+  linhaTopo.append(info, botaoRemover);
+  item.appendChild(linhaTopo);
+
+  // Resposta da loja
+  const respostaWrap = document.createElement('div');
+  respostaWrap.className = 'resposta-loja-wrap';
+
+  function renderizarRespostaSalva() {
+    respostaWrap.innerHTML = '';
+    if (avaliacao.resposta_loja) {
+      const bloco = document.createElement('div');
+      bloco.className = 'resposta-loja-bloco';
+
+      const titulo = document.createElement('strong');
+      titulo.textContent = '💬 Resposta da Flabelli';
+
+      const texto = document.createElement('p');
+      texto.textContent = avaliacao.resposta_loja;
+
+      const botaoEditar = document.createElement('button');
+      botaoEditar.type = 'button';
+      botaoEditar.className = 'botao-link-editar-resposta';
+      botaoEditar.textContent = 'Editar resposta';
+      botaoEditar.addEventListener('click', () => mostrarFormResposta());
+
+      bloco.append(titulo, texto, botaoEditar);
+      respostaWrap.appendChild(bloco);
+    } else {
+      const botaoResponder = document.createElement('button');
+      botaoResponder.type = 'button';
+      botaoResponder.className = 'botao-responder';
+      botaoResponder.textContent = '💬 Responder';
+      botaoResponder.addEventListener('click', () => mostrarFormResposta());
+      respostaWrap.appendChild(botaoResponder);
+    }
+  }
+
+  function mostrarFormResposta() {
+    respostaWrap.innerHTML = '';
+    const form = document.createElement('div');
+    form.className = 'resposta-loja-form';
+
+    const campoWrap = document.createElement('div');
+    campoWrap.className = 'resposta-loja-campo-wrap';
+
+    const textarea = document.createElement('textarea');
+    textarea.rows = 2;
+    textarea.placeholder = 'Escreva uma resposta pública para este cliente...';
+    textarea.value = avaliacao.resposta_loja || '';
+
+    const emojiWrap = document.createElement('div');
+    emojiWrap.className = 'emoji-picker-wrapper-resposta';
+
+    const emojiTrigger = document.createElement('button');
+    emojiTrigger.type = 'button';
+    emojiTrigger.className = 'emoji-trigger-resposta';
+    emojiTrigger.title = 'Adicionar emoji';
+    emojiTrigger.textContent = '😊';
+
+    const emojiPopup = document.createElement('div');
+    emojiPopup.className = 'emoji-picker-popup-resposta';
+    emojiPopup.hidden = true;
+
+    const emojiPicker = document.createElement('emoji-picker');
+    emojiPopup.appendChild(emojiPicker);
+
+    emojiTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      emojiPopup.hidden = !emojiPopup.hidden;
+    });
+
+    emojiPicker.addEventListener('emoji-click', (e) => {
+      const emoji = e.detail.unicode;
+      const inicio = textarea.selectionStart ?? textarea.value.length;
+      const fim = textarea.selectionEnd ?? textarea.value.length;
+      textarea.value = textarea.value.slice(0, inicio) + emoji + textarea.value.slice(fim);
+      const novaPos = inicio + emoji.length;
+      textarea.focus();
+      textarea.setSelectionRange(novaPos, novaPos);
+      emojiPopup.hidden = true;
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!emojiPopup.hidden && !emojiPopup.contains(e.target) && e.target !== emojiTrigger) {
+        emojiPopup.hidden = true;
+      }
+    });
+
+    emojiWrap.append(emojiTrigger, emojiPopup);
+    campoWrap.append(textarea, emojiWrap);
+
+    const acoes = document.createElement('div');
+    acoes.className = 'resposta-loja-acoes';
+
+    const botaoSalvar = document.createElement('button');
+    botaoSalvar.type = 'button';
+    botaoSalvar.className = 'botao-primario botao-resposta-salvar';
+    botaoSalvar.textContent = 'Salvar resposta';
+    botaoSalvar.addEventListener('click', async () => {
+      const texto = textarea.value.trim();
+      botaoSalvar.disabled = true;
+      botaoSalvar.textContent = 'Salvando...';
+      const { error } = await supabaseClient.from('avaliacoes').update({ resposta_loja: texto || null }).eq('id', avaliacao.id);
+      botaoSalvar.disabled = false;
+      botaoSalvar.textContent = 'Salvar resposta';
+      if (error) { alert(`Erro ao salvar resposta: ${error.message}`); return; }
+      avaliacao.resposta_loja = texto || null;
+      renderizarRespostaSalva();
+    });
+
+    const botaoCancelar = document.createElement('button');
+    botaoCancelar.type = 'button';
+    botaoCancelar.className = 'botao-secundario';
+    botaoCancelar.textContent = 'Cancelar';
+    botaoCancelar.addEventListener('click', renderizarRespostaSalva);
+
+    acoes.append(botaoSalvar, botaoCancelar);
+    form.append(campoWrap, acoes);
+    respostaWrap.appendChild(form);
+    textarea.focus();
+  }
+
+  renderizarRespostaSalva();
+  item.appendChild(respostaWrap);
+
+  return item;
+}
+
+async function removerAvaliacao(id) {
+  if (!confirm('Excluir esta avaliação? Essa ação não pode ser desfeita.')) return;
+
+  const { error } = await supabaseClient.from('avaliacoes').delete().eq('id', id);
+
+  if (error) {
+    alert(`Erro ao excluir avaliação: ${error.message}`);
+    return;
+  }
+
+  carregarAvaliacoesAdmin();
+}
+
+function renderizarAvaliacoesAdmin() {
+  const lista = document.getElementById('listaAvaliacoesAdmin');
+  if (!lista) return;
+
+  const filtro = document.getElementById('filtroNotaAvaliacao')?.value || 'todas';
+  let filtradas = avaliacoesCache;
+  if (filtro === 'negativas') {
+    filtradas = avaliacoesCache.filter((a) => Number(a.nota) <= 2);
+  } else if (filtro !== 'todas') {
+    filtradas = avaliacoesCache.filter((a) => Number(a.nota) === Number(filtro));
+  }
+
+  const badge = document.getElementById('contagemAvaliacoes');
+  if (badge) badge.textContent = avaliacoesCache.length;
+
+  lista.innerHTML = '';
+  if (filtradas.length === 0) {
+    lista.innerHTML = avaliacoesCache.length === 0
+      ? '<div class="estado-vazio"><span class="estado-vazio-icone">⭐</span><p>Nenhuma avaliação ainda.</p></div>'
+      : '<p class="mensagem-status">Nenhuma avaliação encontrada para esse filtro.</p>';
+    return;
+  }
+
+  filtradas.forEach((avaliacao) => lista.appendChild(criarItemAvaliacaoAdmin(avaliacao)));
+}
+
+async function carregarAvaliacoesAdmin() {
+  const lista = document.getElementById('listaAvaliacoesAdmin');
+  if (!lista) return;
+  lista.innerHTML = '<p class="mensagem-status">Carregando avaliações...</p>';
+
+  const { data, error } = await supabaseClient
+    .from('avaliacoes')
+    .select('*, produtos(nome)')
+    .order('criado_em', { ascending: false });
+
+  if (error) {
+    lista.innerHTML = `<p class="mensagem-erro">Erro ao carregar avaliações: ${error.message}</p>`;
+    return;
+  }
+
+  avaliacoesCache = data || [];
+  renderizarAvaliacoesAdmin();
+
+}
+
 async function salvarProduto(evento) {
   evento.preventDefault();
   formErro.textContent = '';
@@ -712,6 +1025,8 @@ async function salvarProduto(evento) {
     descricao: campoDescricao.value.trim(),
     estoque: Number(campoEstoque.value) || 0,
     esgotado: campoEsgotado.checked,
+    ingredientes: _tagsIngredientes,
+    informacoes_importantes: _tagsInfo,
   };
 
   // Upload das fotos novas e montagem do array imagens
@@ -785,6 +1100,18 @@ async function salvarProduto(evento) {
 
     if (!resposta.error) {
       formErro.textContent = '⚠️ Salvo, mas desconto não aplicado. Execute no Supabase SQL Editor: ALTER TABLE produtos ADD COLUMN IF NOT EXISTS desconto integer DEFAULT 0;';
+    }
+  }
+
+  // Fallback: colunas ingredientes/informacoes_importantes não existem
+  if (resposta.error && (resposta.error.message.includes('ingredientes') || resposta.error.message.includes('informacoes_importantes'))) {
+    const dadosSemTags = { ...dadosProduto };
+    delete dadosSemTags.ingredientes;
+    delete dadosSemTags.informacoes_importantes;
+    resposta = await executarSave(dadosSemTags);
+
+    if (!resposta.error) {
+      formErro.textContent = '⚠️ Salvo, mas ingredientes/informações não aplicados. Execute no Supabase SQL Editor: ALTER TABLE produtos ADD COLUMN IF NOT EXISTS ingredientes jsonb DEFAULT \'[]\'::jsonb; ALTER TABLE produtos ADD COLUMN IF NOT EXISTS informacoes_importantes jsonb DEFAULT \'[]\'::jsonb;';
     }
   }
 
@@ -1523,12 +1850,28 @@ function renderizarListaCategorias() {
     const item = document.createElement('div');
     item.className = 'item-categoria-admin';
 
+    const botaoMoverEsq = document.createElement('button');
+    botaoMoverEsq.type = 'button';
+    botaoMoverEsq.className = 'botao-mover-categoria';
+    botaoMoverEsq.title = 'Mover para a esquerda';
+    botaoMoverEsq.innerHTML = '‹';
+    botaoMoverEsq.disabled = index === 0;
+    botaoMoverEsq.addEventListener('click', () => moverCategoria(index, -1));
+
     const emoji = document.createElement('span');
     emoji.className = 'categoria-emoji';
     emoji.textContent = cat.emoji || '🏷️';
 
     const nome = document.createElement('span');
     nome.textContent = cat.nome;
+
+    const botaoMoverDir = document.createElement('button');
+    botaoMoverDir.type = 'button';
+    botaoMoverDir.className = 'botao-mover-categoria';
+    botaoMoverDir.title = 'Mover para a direita';
+    botaoMoverDir.innerHTML = '›';
+    botaoMoverDir.disabled = index === categorias.length - 1;
+    botaoMoverDir.addEventListener('click', () => moverCategoria(index, 1));
 
     const botaoRemover = document.createElement('button');
     botaoRemover.type = 'button';
@@ -1537,9 +1880,20 @@ function renderizarListaCategorias() {
     botaoRemover.textContent = '×';
     botaoRemover.addEventListener('click', () => removerCategoria(index));
 
-    item.append(emoji, nome, botaoRemover);
+    item.append(botaoMoverEsq, emoji, nome, botaoMoverDir, botaoRemover);
     lista.appendChild(item);
   });
+}
+
+function moverCategoria(index, delta) {
+  const categorias = obterCategorias();
+  const novoIndex = index + delta;
+  if (novoIndex < 0 || novoIndex >= categorias.length) return;
+
+  [categorias[index], categorias[novoIndex]] = [categorias[novoIndex], categorias[index]];
+  salvarCategorias(categorias);
+  renderizarListaCategorias();
+  atualizarSelectCategoria();
 }
 
 function removerCategoria(index) {
@@ -1554,11 +1908,11 @@ function removerCategoria(index) {
   atualizarSelectCategoria();
 }
 
-function iniciarEmojiPicker() {
-  const trigger = document.getElementById('emojiTrigger');
-  const popup = document.getElementById('emojiPickerPopup');
-  const picker = document.getElementById('emojiPicker');
-  const campoEmoji = document.getElementById('campoCategoriaEmoji');
+function criarEmojiPicker(idTrigger, idPopup, idPicker, idCampo, aoEscolher) {
+  const trigger = document.getElementById(idTrigger);
+  const popup = document.getElementById(idPopup);
+  const picker = document.getElementById(idPicker);
+  const campoEmoji = document.getElementById(idCampo);
 
   if (!trigger || !popup || !picker) return;
 
@@ -1570,8 +1924,9 @@ function iniciarEmojiPicker() {
   picker.addEventListener('emoji-click', (e) => {
     const emoji = e.detail.unicode;
     trigger.textContent = emoji;
-    campoEmoji.value = emoji;
+    if (campoEmoji) campoEmoji.value = emoji;
     popup.hidden = true;
+    if (aoEscolher) aoEscolher(emoji);
   });
 
   document.addEventListener('click', (e) => {
@@ -1579,6 +1934,72 @@ function iniciarEmojiPicker() {
       popup.hidden = true;
     }
   });
+}
+
+function iniciarEmojiPicker() {
+  criarEmojiPicker('emojiTrigger', 'emojiPickerPopup', 'emojiPicker', 'campoCategoriaEmoji');
+}
+
+// ===== FRASE DO CARDÁPIO =====
+const LEGENDA_PADRAO_TEXTO = 'Muito recheio, sabor inesquecível e carinho em cada detalhe!';
+const LEGENDA_PADRAO_EMOJI = '🎂';
+
+function atualizarPreviewLegenda() {
+  const emoji = document.getElementById('campoLegendaEmoji')?.value.trim() || '';
+  const texto = document.getElementById('campoLegendaTexto')?.value.trim() || '';
+  const preview = document.getElementById('legendaPreview');
+  if (!preview) return;
+  preview.textContent = `${emoji} ${texto}`.trim() || 'Pré-visualização aparece aqui...';
+}
+
+async function carregarLegendaCardapio() {
+  const { data, error } = await supabaseClient
+    .from('configuracoes')
+    .select('chave, valor')
+    .in('chave', ['legenda_texto', 'legenda_emoji']);
+
+  let texto = LEGENDA_PADRAO_TEXTO;
+  let emoji = LEGENDA_PADRAO_EMOJI;
+
+  if (!error && data) {
+    const linhaTexto = data.find((d) => d.chave === 'legenda_texto');
+    const linhaEmoji = data.find((d) => d.chave === 'legenda_emoji');
+    if (linhaTexto?.valor) texto = linhaTexto.valor;
+    if (linhaEmoji?.valor) emoji = linhaEmoji.valor;
+  }
+
+  const campoTexto = document.getElementById('campoLegendaTexto');
+  const campoEmoji = document.getElementById('campoLegendaEmoji');
+  const trigger = document.getElementById('emojiTriggerLegenda');
+  if (campoTexto) campoTexto.value = texto;
+  if (campoEmoji) campoEmoji.value = emoji;
+  if (trigger) trigger.textContent = emoji;
+  atualizarPreviewLegenda();
+}
+
+async function salvarLegendaCardapio() {
+  const botao = document.getElementById('botaoSalvarLegenda');
+  const texto = document.getElementById('campoLegendaTexto').value.trim() || LEGENDA_PADRAO_TEXTO;
+  const emoji = document.getElementById('campoLegendaEmoji').value.trim() || LEGENDA_PADRAO_EMOJI;
+
+  botao.disabled = true;
+  botao.textContent = 'Salvando...';
+
+  const { error } = await supabaseClient.from('configuracoes').upsert([
+    { chave: 'legenda_texto', valor: texto },
+    { chave: 'legenda_emoji', valor: emoji },
+  ]);
+
+  botao.disabled = false;
+  botao.textContent = 'Salvar frase';
+
+  if (error) {
+    alert(`Erro ao salvar: ${error.message}`);
+    return;
+  }
+
+  const msg = document.getElementById('legendaSalvoMsg');
+  if (msg) { msg.hidden = false; setTimeout(() => { msg.hidden = true; }, 2500); }
 }
 
 function adicionarCategoria(evento) {
@@ -2627,9 +3048,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   campoDesconto?.addEventListener('input', atualizarPreviewDesconto);
   campoPreco?.addEventListener('input', atualizarPreviewDesconto);
 
+  document.getElementById('botaoAddIngrediente')?.addEventListener('click', adicionarTagIngrediente);
+  campoNovoIngrediente?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); adicionarTagIngrediente(); }
+  });
+  document.getElementById('botaoAddInfo')?.addEventListener('click', adicionarTagInfo);
+  campoNovaInfo?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); adicionarTagInfo(); }
+  });
+  renderizarTagsIngredientes();
+  renderizarTagsInfo();
+
   const formCategoria = document.getElementById('formCategoria');
   if (formCategoria) formCategoria.addEventListener('submit', adicionarCategoria);
   iniciarEmojiPicker();
+  criarEmojiPicker('emojiTriggerLegenda', 'emojiPickerPopupLegenda', 'emojiPickerLegenda', 'campoLegendaEmoji', atualizarPreviewLegenda);
+  document.getElementById('campoLegendaTexto')?.addEventListener('input', atualizarPreviewLegenda);
+  document.getElementById('botaoSalvarLegenda')?.addEventListener('click', salvarLegendaCardapio);
   inicializarPrecificacao();
   inicializarPlanilhaManual();
   inicializarCalculadora();
@@ -2642,6 +3077,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Dashboard reset
   document.getElementById('botaoResetDashboard')?.addEventListener('click', resetarDashboard);
   document.getElementById('botaoResetInsights')?.addEventListener('click', resetarInsights);
+  document.getElementById('filtroNotaAvaliacao')?.addEventListener('change', renderizarAvaliacoesAdmin);
 
   // Calendário nav
   document.getElementById('calBtnAnterior')?.addEventListener('click', () => {
@@ -2698,6 +3134,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         carregarProdutosAdmin();
         renderizarListaCategorias();
         atualizarSelectCategoria();
+        carregarAvaliacoesAdmin();
+        carregarLegendaCardapio();
       } else if (destino === 'painelDashboard') {
         carregarDashboard();
       } else if (destino === 'painelEstoque') {

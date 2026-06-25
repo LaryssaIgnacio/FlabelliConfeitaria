@@ -121,7 +121,7 @@
         </div>
 
         <h1>Cardápio</h1>
-        <p> 🎂 Muito recheio, sabor inesquecível e carinho em cada detalhe!</p>
+        <p id="legendaCardapio">🎂 Muito recheio, sabor inesquecível e carinho em cada detalhe!</p>
       </div>
     </header>
 
@@ -210,8 +210,83 @@
     </div>
   </div>
 
+  <!-- MODAL: DETALHES DO PRODUTO -->
+  <div class="produto-modal-backdrop" id="produtoModalBackdrop" hidden></div>
+  <div class="produto-modal" id="produtoModal" hidden>
+   <div class="produto-modal-card">
+    <button type="button" class="produto-modal-fechar" id="produtoModalFechar" aria-label="Fechar">×</button>
+    <div class="produto-modal-scroll">
+      <div class="produto-modal-foto" id="produtoModalFoto">
+        <!-- imagem/carrossel preenchido via JS -->
+      </div>
+      <div class="produto-modal-corpo">
+        <div class="produto-modal-topo">
+          <h2 class="produto-modal-nome" id="produtoModalNome"></h2>
+          <div class="produto-modal-preco-wrap" id="produtoModalPrecoWrap"></div>
+        </div>
+        <p class="produto-modal-desc" id="produtoModalDesc"></p>
+
+        <div class="produto-modal-secao" id="produtoModalIngredientesSecao" hidden>
+          <h3>🥛 Ingredientes</h3>
+          <div class="produto-modal-tags" id="produtoModalIngredientes"></div>
+        </div>
+
+        <div class="produto-modal-secao" id="produtoModalInfoSecao" hidden>
+          <h3>⚠️ Informações importantes</h3>
+          <div class="produto-modal-tags produto-modal-tags--alerta" id="produtoModalInfo"></div>
+        </div>
+
+        <div class="produto-modal-secao produto-modal-avaliacoes">
+          <h3>⭐ Avaliações dos clientes</h3>
+
+          <div class="avaliacao-resumo" id="avaliacaoResumo" hidden>
+            <span class="avaliacao-media" id="avaliacaoMedia">0.0</span>
+            <div class="avaliacao-estrelas-resumo" id="avaliacaoEstrelasResumo"></div>
+            <span class="avaliacao-contagem" id="avaliacaoContagem"></span>
+          </div>
+
+          <!-- Form de avaliação (cliente logado) -->
+          <div class="avaliacao-form-wrap" id="avaliacaoFormWrap" hidden>
+            <form id="formAvaliacao">
+              <div class="avaliacao-estrelas-input" id="avaliacaoEstrelasInput">
+                <button type="button" class="estrela-btn" data-valor="1" aria-label="1 estrela">★</button>
+                <button type="button" class="estrela-btn" data-valor="2" aria-label="2 estrelas">★</button>
+                <button type="button" class="estrela-btn" data-valor="3" aria-label="3 estrelas">★</button>
+                <button type="button" class="estrela-btn" data-valor="4" aria-label="4 estrelas">★</button>
+                <button type="button" class="estrela-btn" data-valor="5" aria-label="5 estrelas">★</button>
+              </div>
+              <div class="campo-comentario-wrap">
+                <textarea id="campoComentarioAvaliacao" rows="3" placeholder="Conte como foi sua experiência com esse produto..." maxlength="400"></textarea>
+                <div class="emoji-picker-wrapper-cliente">
+                  <button type="button" class="emoji-trigger-cliente" id="emojiTriggerAvaliacao" title="Adicionar emoji" aria-label="Adicionar emoji">😊</button>
+                  <div class="emoji-picker-popup-cliente" id="emojiPickerPopupAvaliacao" hidden>
+                    <emoji-picker id="emojiPickerAvaliacao"></emoji-picker>
+                  </div>
+                </div>
+              </div>
+              <p class="mensagem-erro" id="avaliacaoErro"></p>
+              <button type="submit" class="botao-cadastro avaliacao-btn-enviar" id="botaoEnviarAvaliacao">Enviar avaliação</button>
+            </form>
+          </div>
+
+          <!-- Aviso para visitante não logado -->
+          <div class="avaliacao-login-aviso" id="avaliacaoLoginAviso" hidden>
+            <p>Faça login para avaliar este produto.</p>
+            <button type="button" class="botao-cadastro" id="botaoLoginAvaliacao">Entrar / Criar Conta</button>
+          </div>
+
+          <div class="avaliacao-lista" id="avaliacaoLista">
+            <p class="mensagem-status">Carregando avaliações...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+   </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
   <script src="cardapio.js"></script>
 </body>
 </html>
