@@ -445,7 +445,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const { data, error } = await supabaseClient.auth.signUp({
       email,
       password: senha,
-      options: { data: { data_nascimento: nascimento, genero } },
+      options: {
+        data: { data_nascimento: nascimento, genero },
+        emailRedirectTo: 'https://flabelli-confeitaria.vercel.app/cardapio.html',
+      },
     });
 
     botaoCriar.disabled = false;
