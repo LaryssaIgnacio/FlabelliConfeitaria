@@ -178,8 +178,7 @@ async function enviarPedido(carrinho) {
   }
 
   localStorage.removeItem(CHAVE_CARRINHO);
-  window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-  window.location.href = 'cardapio.html';
+  window.location.href = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
